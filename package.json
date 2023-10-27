@@ -1,0 +1,639 @@
+{
+  "name": "blueprint-test",
+  "displayName": "Blueprint",
+  "description": "Keeping track of stuff",
+  "version": "0.0.0",
+  "engines": {
+    "vscode": "^1.83.1"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:blueprint.helloWorld",
+    "onCommand:blueprint.askQuestion",
+    "onCommand:blueprint.refresh",
+    "onCommand:blueprint.addTodo",
+    "onCommand:blueprint.authenticate",
+    "onView:blueprint-sidebar",
+    "workspaceContains:**/jest.config.{js,ts,mjs,cjs,json}",
+    "workspaceContains:**/jest.json",
+    "workspaceContains:node_modules/.bin/jest",
+    "workspaceContains:node_modules/react-scripts/node_modules/.bin/jest",
+    "workspaceContains:node_modules/react-native-scripts",
+    "workspaceContains:**/.vscode-jest"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "blueprint-sidebar-view",
+          "title": "Blueprint",
+          "icon": "media/ton.svg"
+        }
+      ]
+    },
+    "views": {
+      "blueprint-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "blueprint-sidebar",
+          "name": "Contracts",
+          "contextualTitle": "Contracts"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "jest-snapshot",
+        "extensions": [
+          ".js.snap",
+          ".jsx.snap",
+          ".ts.snap",
+          ".tsx.snap"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jest-snapshot",
+        "scopeName": "source.jest.snap",
+        "path": "./syntaxes/jest-snapshot.tmLanguage"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Jest",
+      "properties": {
+        "jest.enable": {
+          "markdownDescription": "enable/disable jest extension for the workspace folder. Default is true",
+          "type": "boolean",
+          "scope": "resource",
+          "default": true
+        },
+        "jest.jestCommandLine": {
+          "description": "The command line to start jest tests. It should be the same command line users run jest tests from a terminal/shell, with ability to append extra arguments (by the extension at runtime)",
+          "type": "string",
+          "scope": "resource"
+        },
+        "jest.autoClearTerminal": {
+          "description": "Clear the terminal output at the start of any new test run.",
+          "type": "boolean",
+          "scope": "resource"
+        },
+        "jest.rootPath": {
+          "description": "The path to your frontend src folder",
+          "type": "string",
+          "default": "",
+          "scope": "resource"
+        },
+        "jest.nodeEnv": {
+          "markdownDescription": "The env passed to runner process in addition to `process.env`",
+          "type": "object",
+          "default": null,
+          "scope": "resource"
+        },
+        "jest.shell": {
+          "markdownDescription": "The shell path or a login-shell to override jest runner process default shell (see Node [child_process.spawn()](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options)) for more detail)",
+          "type": [
+            "string",
+            "object"
+          ],
+          "default": null,
+          "scope": "resource"
+        },
+        "jest.showCoverageOnLoad": {
+          "description": "Show code coverage when extension starts (if collected)",
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "markdownDeprecationMessage": "**Deprecated**: Please use [runMode](https://github.com/jest-community/vscode-jest/blob/master/README.md#runmode) instead.",
+          "deprecationMessage": "Deprecated: Please use jest.runMode instead."
+        },
+        "jest.coverageFormatter": {
+          "description": "Coverage formatter to use",
+          "type": "string",
+          "enum": [
+            "DefaultFormatter",
+            "GutterFormatter"
+          ],
+          "default": "DefaultFormatter",
+          "scope": "resource"
+        },
+        "jest.coverageColors": {
+          "markdownDescription": "Coverage indicator color override. See [Coverage Colors](https://github.com/jest-community/vscode-jest/blob/master/README.md#coverageColors) for details and examples",
+          "type": "object",
+          "default": null,
+          "scope": "resource"
+        },
+        "jest.debugMode": {
+          "description": "Enable debug mode to diagnose plugin issues. (see developer console)",
+          "type": "boolean",
+          "default": false,
+          "scope": "resource"
+        },
+        "jest.disabledWorkspaceFolders": {
+          "description": "Disabled workspace folders names in multiroot environment",
+          "type": "array",
+          "items": "string",
+          "default": [],
+          "scope": "window"
+        },
+        "jest.autoRun": {
+          "markdownDescription": "Control when jest should run (changed) tests. It supports multiple models, such as fully automated, onSave, and on-demand... See [AutoRun](https://github.com/jest-community/vscode-jest/blob/master/README.md#how-to-trigger-the-test-run) for details and examples",
+          "type": [
+            "object",
+            "string"
+          ],
+          "default": null,
+          "scope": "resource",
+          "markdownDeprecationMessage": "**Deprecated**: Please use [runMode](https://github.com/jest-community/vscode-jest/blob/master/README.md#runmode) instead.",
+          "deprecationMessage": "Deprecated: Please use jest.runMode instead."
+        },
+        "jest.testExplorer": {
+          "markdownDescription": "Configure jest TestExplorer. See valid [formats](https://github.com/jest-community/vscode-jest/blob/master/README.md#testexplorer) or [how to use test explorer](https://github.com/jest-community/vscode-jest/blob/master/README.md#how-to-use-the-test-explorer) for more details",
+          "type": "object",
+          "default": null,
+          "scope": "resource"
+        },
+        "jest.monitorLongRun": {
+          "markdownDescription": "Enable monitoring for long running test process. See valid [monitorLongRun](https://github.com/jest-community/vscode-jest/blob/master/README.md#monitorLongRun) for details",
+          "type": [
+            "string",
+            "integer"
+          ],
+          "default": 60000,
+          "scope": "resource"
+        },
+        "jest.autoRevealOutput": {
+          "description": "Review jest output terminal",
+          "type": "string",
+          "default": "on-run",
+          "enum": [
+            "on-run",
+            "on-exec-error",
+            "off"
+          ],
+          "enumDescriptions": [
+            "auto show output when test run starts",
+            "auto show test output when execution error occurred",
+            "disable auto show test output"
+          ],
+          "scope": "resource",
+          "markdownDeprecationMessage": "**Deprecated**: Please use [runMode](https://github.com/jest-community/vscode-jest/blob/master/README.md#runmode) instead.",
+          "deprecationMessage": "Deprecated: Please use jest.runMode instead."
+        },
+        "jest.parserPluginOptions": {
+          "markdownDescription": "Configure babel parser plugins. See valid [format](https://github.com/jest-community/vscode-jest/blob/master/README.md#parserpluginoptions)",
+          "type": "object",
+          "default": null,
+          "scope": "resource"
+        },
+        "jest.useDashedArgs": {
+          "markdownDescription": "Use dashed args for jest command line.",
+          "type": "boolean",
+          "default": false,
+          "scope": "resource"
+        },
+        "jest.virtualFolders": {
+          "markdownDescription": "Allows multiple jest run config for a given (physical) folder. See valid [format](https://github.com/jest-community/vscode-jest#virtualfolders)",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "object"
+          }
+        },
+        "jest.runMode": {
+          "markdownDescription": "Control when to run jest tests and present the results. See details in [runMode](https://github.com/jest-community/vscode-jest#runmode)",
+          "default": null,
+          "scope": "resource",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "watch",
+                "on-demand",
+                "on-save",
+                "deferred"
+              ],
+              "markdownDescription": "A predefined Jest run mode. See details in [runMode](https://github.com/jest-community/vscode-jest#runmode)"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "watch",
+                    "on-demand",
+                    "on-save"
+                  ],
+                  "description": "Specifies the jest run mode type."
+                },
+                "runAllTestsOnStartup": {
+                  "type": "boolean",
+                  "description": "Specifies whether to run all tests on startup."
+                },
+                "coverage": {
+                  "type": "boolean",
+                  "description": "Specifies whether to collect and report coverage information."
+                },
+                "revealOutput": {
+                  "type": "string",
+                  "enum": [
+                    "on-run",
+                    "on-exec-error",
+                    "on-demand"
+                  ],
+                  "description": "Determines when to reveal the test run output."
+                },
+                "deferred": {
+                  "type": "boolean",
+                  "description": "Specifies whether the run mode is deferred."
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "additionalProperties": true,
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "on-save"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "testFileOnly": {
+                    "type": "boolean",
+                    "description": "if true, will run tests only when saving test files."
+                  }
+                },
+                "additionalProperties": true
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "testFileOnly"
+                  ]
+                },
+                "errorMessage": "The property 'testFileOnly' should only be present when 'type' is 'on-save'.",
+                "additionalProperties": true
+              },
+              "markdownDescription": "A detailed runMode configuration. See details in [runMode](https://github.com/jest-community/vscode-jest#runmode)"
+            }
+          ]
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "io.orta.jest.start",
+        "category": "Blueprint",
+        "title": "Jest: Start All Runners"
+      },
+      {
+        "command": "io.orta.jest.stop",
+        "category": "Blueprint",
+        "title": "Jest: Stop All Runners"
+      },
+      {
+        "command": "io.orta.jest.toggle-coverage",
+        "category": "Blueprint",
+        "title": "Jest: Toggle Coverage"
+      },
+      {
+        "command": "io.orta.jest.workspace.start",
+        "category": "Blueprint",
+        "title": "Jest: Start Runner (Select Workspace)"
+      },
+      {
+        "command": "io.orta.jest.workspace.stop",
+        "category": "Blueprint",
+        "title": "Jest: Stop Runner (Select Workspace)"
+      },
+      {
+        "command": "io.orta.jest.workspace.toggle-coverage",
+        "category": "Blueprint",
+        "title": "Jest: Toggle Coverage (Select Workspace)"
+      },
+      {
+        "command": "io.orta.jest.workspace.run-all-tests",
+        "category": "Blueprint",
+        "title": "Jest: Run All Tests (Select Workspace)"
+      },
+      {
+        "command": "io.orta.jest.workspace.save-run-mode",
+        "category": "Blueprint",
+        "title": "Jest: Save Current RunMode"
+      },
+      {
+        "command": "io.orta.jest.run-all-tests",
+        "category": "Blueprint",
+        "title": "Jest: Run All Tests"
+      },
+      {
+        "command": "io.orta.jest.editor.workspace.run-all-tests",
+        "category": "Blueprint",
+        "title": "Jest: Run All Tests in Current Workspace"
+      },
+      {
+        "command": "io.orta.jest.editor.workspace.toggle-coverage",
+        "category": "Blueprint",
+        "title": "Jest: Toggle Coverage for Current Workspace"
+      },
+      {
+        "command": "io.orta.jest.editor.run-all-tests",
+        "category": "Blueprint",
+        "title": "Jest: Run Related Tests"
+      },
+      {
+        "command": "io.orta.jest.setup-extension",
+        "category": "Blueprint",
+        "title": "Jest: Setup Extension"
+      },
+      {
+        "command": "io.orta.jest.test-item.run-mode.change",
+        "category": "Blueprint",
+        "title": "Change RunMode",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "io.orta.jest.test-item.reveal-output",
+        "category": "Blueprint",
+        "title": "Reveal Test Output",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "io.orta.jest.test-item.view-snapshot",
+        "category": "Blueprint",
+        "title": "View Snapshot",
+        "icon": "$(camera)"
+      },
+      {
+        "command": "io.orta.jest.test-item.update-snapshot",
+        "category": "Blueprint",
+        "title": "Update Snapshot",
+        "icon": "$(export)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "io.orta.jest.workspace.start",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.workspace.stop",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.workspace.toggle-coverage",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.editor.workspace.toggle-coverage",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.workspace.run-all-tests",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.editor.workspace.run-all-tests",
+          "when": "jest.folderCount > 1"
+        },
+        {
+          "command": "io.orta.jest.editor.run-all-tests",
+          "when": "jest.never"
+        },
+        {
+          "command": "io.orta.jest.test-item.run-mode.change",
+          "when": "jest.never"
+        },
+        {
+          "command": "io.orta.jest.test-item.reveal-output",
+          "when": "jest.never"
+        },
+        {
+          "command": "io.orta.jest.test-item.view-snapshot",
+          "when": "jest.never"
+        },
+        {
+          "command": "io.orta.jest.test-item.update-snapshot",
+          "when": "jest.never"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "editorLangId =~ /(javascript|javascriptreact|typescript|typescriptreact|vue)/ ",
+          "command": "io.orta.jest.editor.run-all-tests",
+          "group": "Jest"
+        }
+      ],
+      "testing/item/context": [
+        {
+          "command": "io.orta.jest.test-item.run-mode.change",
+          "group": "inline@1",
+          "when": "testId in jest.runMode"
+        },
+        {
+          "command": "io.orta.jest.test-item.reveal-output",
+          "group": "inline@2",
+          "when": "testId in jest.workspaceRoot"
+        },
+        {
+          "command": "io.orta.jest.test-item.update-snapshot"
+        }
+      ],
+      "testing/item/gutter": [
+        {
+          "command": "io.orta.jest.test-item.view-snapshot",
+          "when": "testId in jest.editor-view-snapshot"
+        },
+        {
+          "command": "io.orta.jest.test-item.update-snapshot",
+          "when": "testId in jest.editor-update-snapshot"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "io.orta.jest.editor.run-all-tests",
+        "key": "ctrl+alt+t",
+        "mac": "ctrl+alt+t",
+        "when": "editorLangId =~ /(javascript|javascriptreact|typescript|typescriptreact|vue)/ "
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "vscode-jest-tests",
+        "label": "Debug Jest tests using vscode-jest",
+        "languages": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Jest: Default jest configuration",
+            "description": "Running tests by directly running jest",
+            "body": {
+              "type": "node",
+              "name": "vscode-jest-tests.v2",
+              "request": "launch",
+              "program": "^\"\\${workspaceFolder}/node_modules/.bin/jest\"",
+              "args": [
+                "--runInBand",
+                "--watchAll=false",
+                "--testNamePattern",
+                "${jest.testNamePattern}",
+                "--runTestsByPath",
+                "${jest.testFile}"
+              ],
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "console": "integratedTerminal",
+              "internalConsoleOptions": "neverOpen",
+              "disableOptimisticBPs": true,
+              "windows": {
+                "program": "^\"\\${workspaceFolder}/node_modules/jest/bin/jest\""
+              }
+            }
+          },
+          {
+            "label": "Jest: create-react-app",
+            "description": "Running jest within apps bootstrapped by create-react-app (and similar); you may have to edit `runtimeExecutable`",
+            "body": {
+              "type": "node",
+              "name": "vscode-jest-tests.v2",
+              "request": "launch",
+              "runtimeExecutable": "^\"\\${workspaceFolder}/node_modules/.bin/react-scripts\"",
+              "args": [
+                "test",
+                "--env=jsdom",
+                "--runInBand",
+                "--watchAll=false",
+                "--testNamePattern",
+                "${jest.testNamePattern}",
+                "--runTestsByPath",
+                "${jest.testFile}"
+              ],
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "console": "integratedTerminal",
+              "protocol": "inspector",
+              "internalConsoleOptions": "neverOpen",
+              "disableOptimisticBPs": true
+            }
+          },
+          {
+            "label": "Jest: create-react-app (ejected)",
+            "description": "Running jest within apps bootstrapped by create-react-app (and similar) after ejecting",
+            "body": {
+              "type": "node",
+              "name": "vscode-jest-tests.v2",
+              "request": "launch",
+              "program": "^\"\\${workspaceFolder}/scripts/test\"",
+              "args": [
+                "--env=jsdom",
+                "--runInBand",
+                "--watchAll=false",
+                "--testNamePattern",
+                "${jest.testNamePattern}",
+                "--runTestsByPath",
+                "${jest.testFile}"
+              ],
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "console": "integratedTerminal",
+              "protocol": "inspector",
+              "internalConsoleOptions": "neverOpen",
+              "disableOptimisticBPs": true
+            }
+          },
+          {
+            "label": "Jest: Angular (with Yarn)",
+            "description": "Running tests by using 'yarn test'",
+            "body": {
+              "type": "node",
+              "name": "vscode-jest-tests.v2",
+              "request": "launch",
+              "runtimeExecutable": "yarn",
+              "args": [
+                "test",
+                "--run-in-band",
+                "--watch-all=false",
+                "--test-name-pattern",
+                "${jest.testNamePattern}",
+                "--test-path-pattern",
+                "${jest.testFilePattern}"
+              ],
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "console": "integratedTerminal",
+              "internalConsoleOptions": "neverOpen",
+              "disableOptimisticBPs": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "test-compile": "tsc -p ./",
+    "test-watch": "tsc -watch -p ./",
+    "pretest": "npm run test-compile && npm run lint",
+    "ci": "yarn lint && yarn test --coverage",
+    "clean-out": "rimraf ./out",
+    "vscode:prepublish": "yarn clean-out && yarn compile",
+    "compile": "rollup -c && tsc",
+    "watch": "concurrently \"rollup -c -w\" \"tsc \"",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"*.json\"  \"*.js\" ",
+    "test": "jest",
+    "watch-test": "yarn test -- --watch",
+    "tsc": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.1",
+    "@rollup/plugin-typescript": "^8.1.0",
+    "@tsconfig/svelte": "^1.0.10",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/polka": "^0.5.1",
+    "@types/vscode": "^1.52.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "concurrently": "^5.3.0",
+    "eslint": "^7.15.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "rollup": "^2.3.4",
+    "rollup-plugin-svelte": "^6.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "svelte": "^3.31.0",
+    "svelte-check": "^1.1.23",
+    "svelte-preprocess": "^4.6.1",
+    "ts-loader": "^8.0.11",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "dependencies": {
+    "@ton-community/blueprint": "^0.12.0",
+    "ton": "^13.5.0",
+    "arg": "^5.0.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "fs.promises": "^0.1.2",
+    "polka": "^0.5.2",
+    "typescript": "^4.1.2",
+    "vscode-jest": "../../vscode-jest"
+  }
+}
