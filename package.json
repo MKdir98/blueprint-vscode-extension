@@ -589,7 +589,7 @@
   "scripts": {
     "test-compile": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
-    "pretest": "npm run test-compile && npm run lint",
+    "pretest": "yarn run test-compile && yarn run lint",
     "ci": "yarn lint && yarn test --coverage",
     "clean-out": "rimraf ./out",
     "vscode:prepublish": "yarn clean-out && yarn compile",
