@@ -15,11 +15,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18
-      - name: Install Yarn
-        run: npm install -g yarn
 
       - name: Install libs
-        run: yarn install
+        run: npm install
 
       - name: Publish to VSCode Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
