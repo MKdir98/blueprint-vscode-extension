@@ -14,11 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 16
-
-      - name: Install Dependencies
-        run: npm ci
-
+          node-version: 18
       - name: Install Yarn
         run: npm install -g yarn
 
