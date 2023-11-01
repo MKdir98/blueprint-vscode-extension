@@ -474,6 +474,15 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@mk_dir98/vscode-jest@^6.0.2-b1":
+  version "6.0.2-b1"
+  resolved "https://registry.npmjs.org/@mk_dir98/vscode-jest/-/vscode-jest-6.0.2-b1.tgz#5433a1768bbce061b146b453a1dec2d90edf81de"
+  integrity sha512-JPczLdGCX+l1rCdlhNYKMM5LFIUV7BtdktkzjH3W9sEnmWd9XrRRPCr12SmBzozlZTBGrFY1MsZ/PsBExzUt7A==
+  dependencies:
+    istanbul-lib-coverage "^3.2.0"
+    istanbul-lib-source-maps "^4.0.1"
+    jest-editor-support "^31.1.1"
+
 "@multiformats/murmur3@^1.0.3":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@multiformats/murmur3/-/murmur3-1.1.3.tgz#70349166992e5f981f1ddff0200fa775b2bf6606"
@@ -4680,13 +4689,6 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
-
-vscode-jest@../../vscode-jest:
-  version "6.0.2"
-  dependencies:
-    istanbul-lib-coverage "^3.2.0"
-    istanbul-lib-source-maps "^4.0.1"
-    jest-editor-support "^31.1.1"
 
 walker@^1.0.7:
   version "1.0.8"
