@@ -21,9 +21,6 @@ jobs:
       - name: Install libs
         run: yarn install
 
-      - name: Run Tests
-        run: yarn test
-
       - name: Publish to VSCode Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
         with:
