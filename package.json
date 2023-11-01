@@ -2,7 +2,7 @@
   "name": "blueprint-test",
   "displayName": "Blueprint",
   "description": "Keeping track of stuff",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.1"
   },
