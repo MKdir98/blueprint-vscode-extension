@@ -6,6 +6,10 @@
   "engines": {
     "vscode": "^1.83.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MKdir98/blueprint-vscode-extension"
+  },
   "extensionKind": [
     "workspace"
   ],
@@ -632,8 +636,6 @@
     "arg": "^5.0.2",
     "copy-webpack-plugin": "^11.0.0",
     "fs.promises": "^0.1.2",
-    "polka": "^0.5.2",
-    "ton": "^13.5.0",
     "typescript": "^4.1.2"
   }
 }
