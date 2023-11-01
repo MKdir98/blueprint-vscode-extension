@@ -34,12 +34,15 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
           break;
         }
         case "createContract": {
+          const tempArgv = process.argv;
+          process.argv = [];
           await create(
             {
               _: ["create"],
             },
             this
           );
+          process.argv = tempArgv;
           break;
         }
         case "runContract": {

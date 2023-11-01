@@ -627,13 +627,13 @@
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
+    "@mk_dir98/vscode-jest": "^6.0.2-b1",
     "@ton-community/blueprint": "^0.12.0",
-    "ton": "^13.5.0",
     "arg": "^5.0.2",
     "copy-webpack-plugin": "^11.0.0",
     "fs.promises": "^0.1.2",
     "polka": "^0.5.2",
-    "typescript": "^4.1.2",
-    "vscode-jest": "../../vscode-jest"
+    "ton": "^13.5.0",
+    "typescript": "^4.1.2"
   }
 }
