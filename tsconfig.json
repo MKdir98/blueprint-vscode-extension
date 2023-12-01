@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2021",
-    "outDir": "out",
-    "lib": ["es2020", "ES2021.String"],
-    "sourceMap": true,
-    "rootDir": "src",
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "strict": true /* enable all strict type-checking options */
-    /* Additional Checks */
-    // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
-    // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
-    // "noUnusedParameters": true,  /* Report errors on unused parameters. */
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
   },
-  "exclude": ["node_modules", "webviews"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*"]
 }
