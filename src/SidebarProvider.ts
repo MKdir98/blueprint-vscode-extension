@@ -1,16 +1,21 @@
 import * as vscode from "vscode";
 import { getNonce } from "./getNonce";
-import { create } from "@ton-community/blueprint/dist/cli/create";
-import { run } from "@ton-community/blueprint/dist/cli/run";
-import { UIProvider } from "@ton-community/blueprint";
+import { create } from "@ton/blueprint/dist/cli/create";
+import { build } from "@ton/blueprint/dist/cli/build";
+import { run } from "@ton/blueprint/dist/cli/run";
+import { findCompiles } from "@ton/blueprint/dist/utils";
+import { UIProvider } from "@ton/blueprint";
+import * as path from 'path';
 
 export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
   _view?: vscode.WebviewView;
+  _blueprintLog?: vscode.OutputChannel;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri) { }
 
-  public resolveWebviewView(webviewView: vscode.WebviewView) {
+  public async resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
+    this._blueprintLog = vscode.window.createOutputChannel("blueprint-log");
 
     webviewView.webview.options = {
       // Allow scripts in the webview
@@ -20,17 +25,51 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
-        case "changeContent": {
-          if (!data.value) {
-            return;
+        case "getContracts": {
+          await this.updateContracts();
+          break;
+        }
+        case "buildContract": {
+          // await buildOne(data.value);
+          const tempArgv = process.argv;
+          process.argv = [];
+          await build(
+            {
+              _: ["build", data.value],
+            },
+            this
+          );
+          process.argv = tempArgv;
+          break;
+        }
+        case "deployContract": {
+          const tempArgv = process.argv;
+          process.argv = [];
+          await run(
+            {
+              _: ["run", 'deploy' + data.value],
+            },
+            this
+          );
+          process.argv = tempArgv;
+          break;
+        }
+        case "viewContract": {
+          const fileName = data.value;
+          const filePaths = ['.func', '.tact'].map((ext) =>
+            path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, 'contracts', this.pascalToSnake(fileName) + ext)
+          );
+          for (const filePath of filePaths) {
+            try {
+              const document = await vscode.workspace.openTextDocument(vscode.Uri.file(filePath));
+              await vscode.window.showTextDocument(document);
+              break;
+            } catch (error) {
+              console.error(`Error opening file ${filePath}:`, error);
+            }
           }
-          webviewView.webview.postMessage({
-            type: "update",
-            value: data.value,
-          });
           break;
         }
         case "createContract": {
@@ -43,18 +82,23 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
             this
           );
           process.argv = tempArgv;
+          await this.updateContracts();
           break;
         }
         case "runContract": {
-          const tempArgv = process.argv;
-          process.argv = [];
-          await run(
-            {
-              _: ["run"],
-            },
-            this
-          );
-          process.argv = tempArgv;
+          try {
+            const tempArgv = process.argv;
+            process.argv = [];
+            await run(
+              {
+                _: ["run"],
+              },
+              this
+            );
+            process.argv = tempArgv;
+          } catch (ex) {
+            console.error(ex);
+          }
           break;
         }
         case "openTestExplorer": {
@@ -65,18 +109,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
     });
   }
 
+  private pascalToSnake(input: string): string {
+    return input.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+  }
+
+  private async updateContracts(): Promise<void> {
+    var contracts = (await findCompiles()).map(function (file) {
+      return file.name;
+    });
+    this._view?.webview.postMessage({
+      type: 'updateContracts',
+      value: contracts
+    })
+  }
+
   public revive(panel: vscode.WebviewView) {
     this._view = panel;
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/media/reset.css")
     );
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/media/vscode.css")
     );
-
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/media/style.css")
+    );
+    const styleFontAwesomeUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled/media/font-awesome.css")
+    );
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "compiled/sidebar.js")
     );
@@ -99,7 +162,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
+				<link href="${styleUri}" rel="stylesheet">
         <link href="${styleMainUri}" rel="stylesheet">
+        <link href="${styleFontAwesomeUri}" rel="stylesheet">
         <script nonce="${nonce}">
           const tsvscode = acquireVsCodeApi();
         </script>
@@ -111,11 +176,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
   }
 
   write(message: string): void {
-    this._view!.webview.postMessage({ type: "updateContent", value: message });
+    this._blueprintLog!.appendLine(message);
+    this._blueprintLog!.show();
   }
 
   async prompt(message: string): Promise<boolean> {
-    this._view!.webview.postMessage({ type: "updateContent", value: message });
+    this._blueprintLog!.appendLine(message);
+    this._blueprintLog!.show();
     return true;
   }
 
@@ -146,15 +213,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider, UIProvider {
   }
 
   setActionPrompt(message: string): void {
-    this._view!.webview.postMessage({
-      type: "updateContent",
-      value: message,
-    });
+    this._blueprintLog!.appendLine(message);
+    this._blueprintLog!.show();
   }
 
   clearActionPrompt(): void {
-    this._view!.webview.postMessage({ type: "clearContent" });
+    // do nothing
   }
 
-  close() {}
+  close() { }
 }

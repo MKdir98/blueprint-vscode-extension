@@ -20,8 +20,8 @@ ul {
   padding-left: var(--container-paddding);
 }
 
-body > *,
-form > * {
+body>*,
+form>* {
   margin-block-start: var(--input-margin-vertical);
   margin-block-end: var(--input-margin-vertical);
 }
@@ -93,4 +93,63 @@ textarea::placeholder {
 vscode-collapsible p {
   font-size: var(--vscode-font-size);
   margin: 10px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  padding: 4px 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.button i {
+  margin-right: 5px;
+}
+
+.build {
+  background-color: #28a745;
+}
+
+.deploy {
+  background-color: #dc3545;
+}
+
+.view {
+  background-color: #ffc107;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.build-icon {
+  content: url('hammer.png');
+}
+
+.deploy-icon {
+  content: url('play-button.png');
+}
+
+.view-icon {
+  content: url('file-button.png');
 }
