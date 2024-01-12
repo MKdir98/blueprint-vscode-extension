@@ -3,7 +3,7 @@
   "displayName": "Ton Blueprint",
   "description": "Developing Ton project with Blueprint",
   "publisher": "MahdiKarami",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "media/blueprint.png",
   "engines": {
     "vscode": "^1.83.1"
